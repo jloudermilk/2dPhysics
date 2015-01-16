@@ -8,7 +8,7 @@ public class TwoDeePhysics : MonoBehaviour {
 	//basic properties, in units/second
 	float acceleration = 4f;
 	float maxSpeed = 150f;
-	float gravity = 6f;
+	float gravity = 100f;
 	float maxFall = 200f;
 	float jump = 200f;
 
@@ -46,7 +46,7 @@ public class TwoDeePhysics : MonoBehaviour {
 
 
 		if (!grounded)
-						velocity = new Vector3 (velocity.x, Mathf.Max (velocity.y - gravity, -maxFall), velocity.z);
+						velocity = new Vector3 (velocity.x, Mathf.Max ((velocity.y - (gravity * Time.fixedDeltaTime)), -maxFall), velocity.z);
 		if (velocity.y < 0)
 						falling = true;
 		if (grounded || falling) 
@@ -95,11 +95,13 @@ public class TwoDeePhysics : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if(transform.position.y < 1f)
+			Debug.Break();
 	}
 
 	void LateUpdate()
 	{
+
 		transform.Translate (velocity * Time.deltaTime);
 	}
 }
