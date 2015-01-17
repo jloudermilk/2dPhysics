@@ -8,8 +8,8 @@ public class TwoDeePhysics : MonoBehaviour {
 	//basic properties, in units/second
 	float acceleration = 4f;
 	float maxSpeed = 150f;
-	float gravity = 100f;
-	float maxFall = 200f;
+	float gravity = 6f;
+	float maxFall = 160f;
 	float jump = 200f;
 
 	//a layer make set in Start()
@@ -46,12 +46,12 @@ public class TwoDeePhysics : MonoBehaviour {
 
 
 		if (!grounded)
-						velocity = new Vector3 (velocity.x, Mathf.Max ((velocity.y - (gravity * Time.fixedDeltaTime)), -maxFall), velocity.z);
+						velocity = new Vector3 (velocity.x, Mathf.Max ((velocity.y - (gravity)), -maxFall), velocity.z);
 		if (velocity.y < 0)
 						falling = true;
 		if (grounded || falling) 
 		{
-			Vector3 startPoint = new Vector3(box.xMin + margin,box.center.y, transform.position.z);
+		 Vector3 startPoint = new Vector3(box.xMin + margin,box.center.y, transform.position.z);
 			Vector3 endPoint = new Vector3(box.xMax - margin,box.center.y, transform.position.z);
 
 			RaycastHit hitInfo;
@@ -62,17 +62,19 @@ public class TwoDeePhysics : MonoBehaviour {
 
 			for(int i = 0; i < verticalRays;++i)
 			{
-				float lerpAmount = (float) i/ (float) verticalRays -1;
-				Vector3 origin = Vector3.Lerp(startPoint,endPoint,lerpAmount);
-				Ray ray = new Ray(origin, Vector3.down);
 				Vector3 starter =startPoint;
-				starter.y -= velocity.y * Time.deltaTime;
+				starter.y += velocity.y * Time.deltaTime;
 				Vector3 ender = starter;
-				ender.y -= distance;
+				ender.y += distance;
+
+				float lerpAmount = (float) i/ (float) (verticalRays -1);
+				Vector3 origin = Vector3.Lerp(starter,endPoint,lerpAmount);
+				Ray ray = new Ray(origin, Vector3.down);
+			
 
 				connected = Physics.Raycast(ray, out hitInfo, distance, layerMask);
 				if(debug)
-				Debug.DrawLine(starter,ender,Color.green);
+					Debug.DrawRay(starter,Vector3.down,Color.green);
 
 				if(connected)
 				   {
@@ -95,7 +97,7 @@ public class TwoDeePhysics : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(transform.position.y < 1f)
+		if(transform.position.y < .9f)
 			Debug.Break();
 	}
 
