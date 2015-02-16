@@ -10,7 +10,11 @@ public class TwoDeePhysics : MonoBehaviour {
 	float maxSpeed = 150f;
 	float gravity = 6f;
 	float maxFall = 160f;
+
+	float jumpPressedTime=0;
+	public float jumpPressLeeway = .3f;
 	float jump = 200f;
+	bool lastInput = true;
 
 	//a layer make set in Start()
 	int layerMask;
@@ -34,7 +38,7 @@ public class TwoDeePhysics : MonoBehaviour {
 		velocity = Vector3.zero;
 	}
 
-	void FixedUpdate()
+	void Update()
 	{
 		box = new Rect 
 			(
@@ -180,15 +184,23 @@ public class TwoDeePhysics : MonoBehaviour {
 				}
 			}
 		}
-	}
 
+		bool input = Input.GetButton("Jump");
+		if (input && !lastInput){
+			jumpPressedTime = Time.time;
+		}
+		else if (!input){
+			jumpPressedTime = 0;
+		}
+		
+		if (grounded && Time.time - jumpPressedTime < jumpPressLeeway){
+			velocity.y= jump;
+			jumpPressedTime = 0;
+		}
+		
+		lastInput = input;
+	}
 	
-	// Update is called once per frame
-	void Update () {
-		if(transform.position.y < .9f)
-			Debug.Break();
-	}
-
 	void LateUpdate()
 	{
 
